@@ -42,17 +42,20 @@ class PointsPicker_UI_Init():
         }
 
         # Help Window
-        self.info_panel = self.wm.create_window('Points Picker Help', {'pos':9, 'movable':True})#, 'bgcolor':(0.30, 0.60, 0.30, 0.90)})
-        self.info_panel.add(ui.UI_Label('Instructions', align=0, margin=4))
-        self.inst_paragraphs = [self.info_panel.add(ui.UI_Markdown('', min_size=(200,10))) for i in range(3)]
-        #for i in self.inst_paragraphs: i.visible = False
-        self.set_ui_text()
+        self.info_panel = ui.framed_dialog(label="Points Picker Tools", id="info_panel")
+        ui.span(innerText="test", parent=self.info_panel)
+
+        # self.info_panel = self.wm.create_window('Points Picker Help', {'pos':9, 'movable':True})#, 'bgcolor':(0.30, 0.60, 0.30, 0.90)})
+        # self.info_panel.add(ui.UI_Label('Instructions', align=0, margin=4))
+        # self.inst_paragraphs = [self.info_panel.add(ui.UI_Markdown('', min_size=(200,10))) for i in range(3)]
+        # #for i in self.inst_paragraphs: i.visible = False
+        # self.set_ui_text()
 
         # Tools Window
-        self.tools_panel = self.wm.create_window('Points Picker Tools', {'pos':7, 'movable':True, 'bgcolor':(0.50, 0.50, 0.50, 0.90)})
-        segmentation_container = self.tools_panel.add(ui.UI_Container())
-        segmentation_container.add(ui.UI_Button('Commit', self.done, align=0))
-        segmentation_container.add(ui.UI_Button('Cancel', lambda:self.done(cancel=True), align=0))
+        self.tools_panel = ui.framed_dialog(label="Points Picker Tools", id="tools_panel")
+        ui.div(id="tools", parent=self.tools_panel)
+        ui.button(label="Commit", parent=self.tools_panel, on_mouseclick=self.done)
+        ui.button(label="Cancel", parent=self.tools_panel, on_mouseclick=self.done)
 
     def set_ui_text(self):
         """ sets the viewport text """
