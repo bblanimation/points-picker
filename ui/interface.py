@@ -28,7 +28,7 @@ from ..functions.common import *
 
 class VIEW3D_PT_tools_points_picker(Panel):
     bl_space_type  = "VIEW_3D"
-    bl_region_type = "TOOLS"
+    bl_region_type = "UI" if b280() else "TOOLS"
     bl_label       = "Points Picker"
     bl_idname      = "VIEW3D_PT_tools_points_picker"
     bl_context     = "objectmode"
