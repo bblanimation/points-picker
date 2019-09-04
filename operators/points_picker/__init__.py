@@ -225,10 +225,9 @@ class VIEW3D_OT_points_picker(PointsPicker_States, PointsPicker_UI_Init, PointsP
             imx = mx.inverted()
             no_mx = imx.to_3x3().transposed()
 
-            if bversion() < '002.077.000':
-                loc, no, face_ind = self.snap_ob.ray_cast(imx * ray_origin, imx * ray_target)[0 if bversion() < '002.077.000' else 1:]
-            else:
-                hit, loc, no, face_ind = self.snap_ob.ray_cast(imx * ray_origin, imx * ray_target - imx*ray_origin)
+            adjusted_orig = mathutils_mult(imx, ray_origin)
+            adjusted_targ = mathutils_mult(imx, ray_target)
+            hit, loc, no, face_ind = self.snap_ob.ray_cast(adjusted_orig, adjusted_targ - adjusted_orig)
 
             if face_ind != -1:
                 hit = True
@@ -244,7 +243,7 @@ class VIEW3D_OT_points_picker(PointsPicker_States, PointsPicker_UI_Init, PointsP
             return False
         # add new point
         elif self.hovered[0] == None:
-            new_point = D3Point(location=mx * loc, surface_normal=no_mx * no, view_direction=view_vector, source_object=obj if self.snap_type == "SCENE" else self.snap_ob)
+            new_point = D3Point(location=mathutils_mult(mx, loc), surface_normal=mathutils_mult(no_mx, no), view_direction=view_vector, source_object=obj if self.snap_type == "SCENE" else self.snap_ob)
             self.b_pts.append(new_point)
             new_point.label = self.getLabel(len(self.b_pts) - 1)
             self.hovered = ['POINT', len(self.b_pts) - 1]
@@ -285,33 +284,26 @@ class VIEW3D_OT_points_picker(PointsPicker_States, PointsPicker_UI_Init, PointsP
             mx = self.snap_ob.matrix_world
             imx = mx.inverted()
 
-            if bversion() < '002.077.000':
-                loc, no, face_ind = self.snap_ob.ray_cast(imx * ray_origin, imx * ray_target)
-                if face_ind == -1:
-                    #do some shit
-                    pass
-            else:
-                res, loc, no, face_ind = self.snap_ob.ray_cast(imx * ray_origin, imx * ray_target - imx * ray_origin)
-                if not res:
-                    #do some shit
-                    pass
+            adjusted_orig = mathutils_mult(imx, ray_origin)
+            adjusted_targ = mathutils_mult(imx, ray_target)
+            res, loc, no, face_ind = self.snap_ob.ray_cast(adjusted_orig, adjusted_targ - adjusted_orig)
+            if not res:
+                # do something
+                pass
         elif self.snap_type == 'SCENE':
 
-            mx = Matrix.Identity(4) #scene ray cast returns world coords
-            if bversion() < '002.077.000':
-                res, obj, omx, loc, no = context.scene.ray_cast(ray_origin, ray_target)
-            else:
-                res, loc, no, ind, obj, omx = context.scene.ray_cast(ray_origin, view_vector)
+            mx = Matrix.Identity(4)  # scene ray cast returns world coords
+            res, loc, no, ind, obj, omx = context.scene.ray_cast(ray_origin, view_vector)
 
 
         def dist(v):
-            diff = v - Vector((x,y))
+            diff = v - Vector((x, y))
             return diff.length
 
         def dist3d(pt):
             if pt.location is None:
                 return 100000000
-            delt = pt.location - mx * loc
+            delt = pt.location - mathutils_mult(mx, loc)
             return delt.length
 
         closest_3d_point = min(self.b_pts, key=dist3d)

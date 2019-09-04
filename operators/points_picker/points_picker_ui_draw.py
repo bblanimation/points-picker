@@ -26,6 +26,7 @@ from mathutils import Vector
 from bpy_extras import view3d_utils
 
 # Module imports
+from ...functions.common import *
 from ...subtrees.addon_common.cookiecutter.cookiecutter import CookieCutter
 
 
@@ -71,6 +72,7 @@ class PointsPicker_UI_Draw():
 
     @CookieCutter.Draw("post3d")
     def draw_postview(self):
+        return
         if len(self.b_pts) == 0: return
         draw_3d_points(bpy.context, [pt.location for pt in self.b_pts], 3)
 
@@ -83,6 +85,7 @@ class PointsPicker_UI_Draw():
 
     @CookieCutter.Draw("post2d")
     def draw_postpixel(self):
+        return
         # if len(self.b_pts) == 0: return
         # draw_3d_points(bpy.context, [pt.location for pt in self.b_pts], 3)
         #
@@ -96,7 +99,7 @@ class PointsPicker_UI_Draw():
 
         region = bpy.context.region
         rv3d = bpy.context.space_data.region_3d
-        dpi = bpy.context.user_preferences.system.dpi
+        dpi = get_preferences().system.dpi
         # blf.size(0, 20, dpi) #fond_id = 0
         for i,pt in enumerate(self.b_pts):
             if pt.label:
