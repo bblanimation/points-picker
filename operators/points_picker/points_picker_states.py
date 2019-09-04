@@ -49,7 +49,7 @@ class PointsPicker_States():
         if self.actions.mousemove or self.actions.navigating():
             x, y = self.event.mouse_region_x, self.event.mouse_region_y
             self.hover(bpy.context, x, y)
-        self.cursor_modal_set("HAND" if self.hovered[0] == "POINT" and not self.event.alt else "CROSSHAIR")
+        # self.cursor_modal_set("HAND" if self.hovered[0] == "POINT" and not self.event.alt else "CROSSHAIR")
 
         # actions for no hovered point
         if self.hovered[0] is None:

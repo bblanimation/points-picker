@@ -16,13 +16,28 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 # System imports
-# NONE!
+import os
 
 # Blender imports
 # NONE!
 
 # Module imports
 from ...subtrees.addon_common.common import ui
+from ...subtrees.addon_common.common.ui_styling import load_defaultstylings
+from ...subtrees.addon_common.common.globals import Globals
+
+def reload_stylings():
+    load_defaultstylings()
+    path = os.path.join(os.path.dirname(__file__), '..', 'config', 'ui.css')
+    try:
+        Globals.ui_draw.load_stylesheet(path)
+    except AssertionError as e:
+        # TODO: show proper dialog to user here!!
+        print('could not load stylesheet "%s"' % path)
+        print(e)
+    Globals.ui_document.body.dirty('Reloaded stylings', children=True)
+    Globals.ui_document.body.dirty_styling()
+    Globals.ui_document.body.dirty_flow()
 
 
 class PointsPicker_UI_Init():
@@ -41,8 +56,17 @@ class PointsPicker_UI_Init():
             "remove": "Press 'ALT' and left-click to remove a point",
         }
 
+        self.manipulator_hide()
+        self.panels_hide()
+        self.overlays_hide()
+        self.region_darken()
+        self.header_text_set("Points Picker")
+
+        # load ui.css
+        reload_stylings()
+
         # Help Window
-        self.info_panel = ui.framed_dialog(label="Points Picker Tools", id="info_panel")
+        self.info_panel = ui.framed_dialog(label="Points Picker Tools", id="info_panel", right=0, parent=self.document.body)
         ui.span(innerText="test", parent=self.info_panel)
 
         # self.info_panel = self.wm.create_window('Points Picker Help', {'pos':9, 'movable':True})#, 'bgcolor':(0.30, 0.60, 0.30, 0.90)})
@@ -52,7 +76,7 @@ class PointsPicker_UI_Init():
         # self.set_ui_text()
 
         # Tools Window
-        self.tools_panel = ui.framed_dialog(label="Points Picker Tools", id="tools_panel")
+        self.tools_panel = ui.framed_dialog(label="Points Picker Tools", id="tools_panel", parent=self.document.body)
         ui.div(id="tools", parent=self.tools_panel)
         ui.button(label="Commit", parent=self.tools_panel, on_mouseclick=self.done)
         ui.button(label="Cancel", parent=self.tools_panel, on_mouseclick=self.done)
